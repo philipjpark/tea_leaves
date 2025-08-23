@@ -4,7 +4,7 @@
 
 ## 🚀 Vision
 
-*Tea_leaves* is a revolutionary **Multi-Asset Bartering Exchange (BEX)** that transforms traditional finance into a global, digital, instant system using crypto rails and smart contracts. Instead of USD being the middleman, assets swap directly: **Prediction tokens → ETH → ETF → Startup equity → Commodities → back to crypto**.
+*Tea_leaves* is a revolutionary **Multi-Asset Bartering Exchange (BEX)** that transforms traditional finance into a global, digital, instant system using crypto rails and smart contracts. Instead of USD being the middleman, assets swap directly: ***Ex.* Prediction tokens → ETH → ETF → Startup equity → Commodities → back to crypto**.
 
 This turns finance into a continuous, always-on barter network where anything can be traded for anything, anywhere, anytime.
 

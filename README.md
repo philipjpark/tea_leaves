@@ -1,15 +1,15 @@
-# 🌍 tea_leaves - Multi-Asset Bartering Exchange (BEX)
+# <img src="frontend/public/tea.png" width="32" height="32" alt="tea_leaves"> *Tea_leaves* - Multi-Asset Bartering Exchange (BEX)
 
 > **"Tokenizing Every Asset, Reimagining Asset Classes"** - The Future of Global Digital Bartering
 
 ## 🚀 Vision
 
-tea_leaves is a revolutionary **Multi-Asset Bartering Exchange (BEX)** that transforms traditional finance into a global, digital, instant system using crypto rails and smart contracts. Instead of USD being the middleman, assets swap directly: **Prediction tokens → ETH → ETF → Startup equity → Commodities → back to crypto**.
+*Tea_leaves* is a revolutionary **Multi-Asset Bartering Exchange (BEX)** that transforms traditional finance into a global, digital, instant system using crypto rails and smart contracts. Instead of USD being the middleman, assets swap directly: **Prediction tokens → ETH → ETF → Startup equity → Commodities → back to crypto**.
 
 This turns finance into a continuous, always-on barter network where anything can be traded for anything, anywhere, anytime.
 
-### 🎯 What tea_leaves is About
-- **Platform Identity**: tea_leaves - Multi-Asset Bartering Exchange (BEX)
+### 🎯 What *Tea_leaves* is About
+- **Platform Identity**: *Tea_leaves* - Multi-Asset Bartering Exchange (BEX)
 - **Tagline**: "Tokenizing Every Asset, Reimagining Asset Classes"
 - **Enterprise Focus**: "Enterprise-grade infrastructure for RWA tokenization"
 - **Asset Agnostic**: Granular deep asset trading with real-time and reliable liquidity
@@ -47,7 +47,7 @@ This turns finance into a continuous, always-on barter network where anything ca
 
 ## 🌟 Why It Works Now
 
-tea_leaves sits at the intersection of trends that didn't exist even 5 years ago:
+*Tea_leaves* sits at the intersection of trends that didn't exist even 5 years ago:
 
 - **Prediction markets**: Polymarket, Kalshi → trade event outcomes like assets
 - **Tokenization platforms**: Ondo Finance, Securitize → tokenized bonds, ETFs, private equity
@@ -100,7 +100,7 @@ tea_leaves sits at the intersection of trends that didn't exist even 5 years ago
 - **Gas Estimation**: Smart gas cost calculations
 - **Cross-chain Ready**: Foundation for LayerZero/Axelar integration
 
-### ✅ Tea_Leaves AI Integration
+### ✅ *Tea_Leaves* AI Integration
 - **Gemma 3-4B Model**: Advanced AI-powered strategy generation
 - **Factor Discovery**: Automated factor analysis and optimization
 - **Agentic Framework**: 3 separate agentic pods tasked to orchestrate tokenization tasks
@@ -108,9 +108,9 @@ tea_leaves sits at the intersection of trends that didn't exist even 5 years ago
 ## 🛠️ Tech Stack
 
 - **Frontend**: React + TypeScript + Material-UI + Framer Motion
-- **Backend**: Rust + Actix-web + Tea_Leaves AI Framework
+- **Backend**: Rust + Actix-web + *Tea_Leaves* AI Framework
 - **Blockchain**: BNB Smart Chain (BSC) + Solidity
-- **AI**: Google Gemma 3-4B + Tea-Leaves Factor Discovery
+- **AI**: Google Gemma 3-4B + *Tea-Leaves* Factor Discovery
 - **Cross-chain**: LayerZero/Axelar (planned)
 - **Token Standards**: ERC-20, ERC-4626
 - **Deployment**: Docker + Google Cloud Run
@@ -228,5 +228,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-**Tea_Leaves Platform v1.0.0** - *Tokenizing Every Asset*
+Coming Soon :)
+
+***Tea_Leaves* Platform v1.0.0** - *Tokenizing Every Asset*
 

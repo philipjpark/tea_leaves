@@ -1,0 +1,41 @@
+{
+  "name": "tea-leaves-platform",
+  "version": "1.0.0",
+  "description": "Tea-Leaves - AI-Powered DeFi Strategy Platform with PYUSD Integration and Factor Discovery",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:proxy\"",
+    "dev:backend": "cd backend && cargo run",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:proxy": "node proxy-server.js",
+    "build": "cd frontend && npm run build",
+    "start": "cd frontend && npm start",
+    "start:proxy": "node proxy-server.js",
+    "build:rust": "cargo build --release",
+    "test:rust": "cargo test",
+    "clean": "cargo clean && rm -rf frontend/build frontend/dist node_modules",
+    "docker:build": "docker build -t tea-leaves-platform .",
+    "docker:run": "docker run -p 8080:8080 tea-leaves-platform"
+  },
+  "keywords": ["defi", "ai", "trading", "strategy", "blockchain", "bnb", "pyusd", "tea-leaves", "factor-discovery", "gemma"],
+  "author": "Tea-Leaves Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/tea-leaves.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0"
+  }
+}

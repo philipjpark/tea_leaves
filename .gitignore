@@ -1,0 +1,112 @@
+﻿# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Production builds
+build/
+dist/
+frontend/build/
+frontend/dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Docker
+.dockerignore
+Dockerfile
+
+# Tea-leaves specific
+tea-leaves-*.log
+tea-leaves-cache/
+tea-leaves-artifacts/
+
+# Blockchain artifacts
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Hardhat
+hardhat-deployments/
+hardhat-deployments.json
+
+# Solana
+.anchor/
+target/
+**/*.rs.bk
+
+# Python (if any)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Local configuration
+config/local.toml
+config/local.env

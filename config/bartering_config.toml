@@ -1,0 +1,177 @@
+# Tea-Leaves Bartering 2.0 Configuration
+# Asset Tokenization and Direct Bartering Platform
+
+[platform]
+name = "tea-leaves"
+version = "1.0.0"
+description = "Tokenizing Every Asset - Tea-Leaves Bartering 2.0 Platform"
+environment = "development" # development, staging, production
+
+[blockchain]
+# BNB Chain Configuration
+bsc_testnet_rpc = "https://data-seed-prebsc-1-s1.binance.org:8545"
+bsc_mainnet_rpc = "https://bsc-dataseed.binance.org/"
+bsc_testnet_chain_id = 97
+bsc_mainnet_chain_id = 56
+
+# Solana Configuration
+solana_devnet_rpc = "https://api.devnet.solana.com"
+solana_mainnet_rpc = "https://api.mainnet-beta.solana.com"
+
+# Contract Addresses
+asset_tokenization_address = "0x0000000000000000000000000000000000000000"
+bartering_engine_address = "0x0000000000000000000000000000000000000000"
+liquidity_pool_address = "0x0000000000000000000000000000000000000000"
+
+[bartering]
+# Core Bartering Settings
+max_offer_expiry_hours = 168  # 7 days
+min_barter_amount = 1
+max_barter_amount = 1000000
+default_slippage_tolerance = 0.5  # 0.5%
+max_concurrent_offers = 10
+
+# Asset Classes Supported
+supported_asset_classes = [
+    "IPRights",
+    "MusicRoyalties", 
+    "RealEstate",
+    "Commodities",
+    "PredictionMarkets",
+    "StartupEquity",
+    "CryptoTokens",
+    "TokenizedSecurities",
+    "Custom"
+]
+
+[asset_tokenization]
+# Token Creation Settings
+min_token_name_length = 2
+max_token_name_length = 7
+min_token_symbol_length = 2
+max_token_symbol_length = 7
+max_metadata_uri_length = 200
+default_token_decimals = 6
+
+# Supported Chains
+supported_chains = ["BNB", "SOL"]
+
+# Token Standards
+bnb_standard = "ERC-20"
+solana_standard = "SPL"
+
+[ai_integration]
+# Tea-Leaves Gemma AI Integration 
+gemma_url = "https://yoree-gemma-827561407333.europe-west1.run.app"
+gemma_model = "gemma3:4b"
+max_tokens = 2048
+temperature = 0.7
+
+# Tea-Leaves AI Agents for Bartering
+agents = [
+    "semantic_analyzer",
+    "fundraiser_agent", 
+    "execution_agent"
+]
+
+[semantic_analyzer]
+name = "Tea-Leaves Semantic Analyzer"
+description = "Analyzes asset descriptions and generates tokenization recommendations"
+enabled = true
+analysis_interval = 300  # 5 minutes
+
+[fundraiser_agent]
+name = "Tea-Leaves Fundraiser Agent"
+description = "Identifies liquidity providers and fundraising opportunities"
+enabled = true
+alert_interval = 600  # 10 minutes
+
+[execution_agent]
+name = "Tea-Leaves Execution Agent"
+description = "Executes bartering transactions and manages liquidity"
+enabled = true
+execution_timeout = 300  # 5 minutes
+
+[database]
+# PostgreSQL Configuration
+host = "localhost"
+port = 5432
+database = "tea-leaves"
+username = "tea-leaves-user"
+password = "YOUR_DATABASE_PASSWORD_HERE"
+
+# Connection Pool
+max_connections = 20
+min_connections = 5
+connection_timeout = 30
+
+[api]
+# REST API Configuration
+host = "127.0.0.1"
+port = 3001
+cors_origins = ["http://localhost:3000", "https://tea-leaves.com"]
+rate_limit_requests = 100
+rate_limit_window = 60  # seconds
+
+# Authentication
+jwt_secret = "YOUR_JWT_SECRET_HERE"
+jwt_expiry_hours = 24
+refresh_token_expiry_days = 30
+
+[security]
+# Security Settings
+api_rate_limit = 100  # requests per minute
+max_request_size = "10MB"
+timeout_seconds = 30
+cors_enabled = true
+
+# Encryption
+encryption_algorithm = "AES-256-GCM"
+key_derivation_function = "PBKDF2"
+
+[monitoring]
+# Monitoring and Logging
+log_level = "info"  # debug, info, warn, error
+log_format = "json"
+metrics_enabled = true
+alerting_enabled = true
+
+# Health Checks
+health_check_interval = 60  # seconds
+health_check_timeout = 10   # seconds
+
+# Performance Monitoring
+performance_tracking = true
+slow_query_threshold = 1000  # milliseconds
+
+[integrations]
+# External Data Sources
+coinbase_enabled = true
+binance_enabled = true
+coinmarketcap_enabled = true
+pyth_network_enabled = true
+
+# AI/ML Services
+google_ai_platform_enabled = true
+vertex_ai_enabled = true
+bigquery_enabled = true
+
+# Blockchain Services
+chainlink_enabled = true
+pyth_enabled = true
+band_protocol_enabled = true
+
+[deployment]
+# Deployment Configuration
+docker_enabled = true
+kubernetes_enabled = false
+auto_scaling_enabled = true
+
+# Environment Variables
+env_file = ".env"
+secrets_file = ".secrets"
+
+# Backup Configuration
+backup_enabled = true
+backup_interval_hours = 24
+backup_retention_days = 30 

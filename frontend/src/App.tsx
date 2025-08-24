@@ -8,6 +8,8 @@ import theme from './styles/theme';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import TokenFactory from './components/strategy/TokenFactory';
+import TokenLeaderboard from './components/leaderboard/TokenLeaderboard';
+
 import ProvideLiquidity from './components/strategy/ProvideLiquidity';
 import WhatsInAName from './pages/WhatsInAName';
 import TokenIncentivization from './components/incentives/TokenIncentivization';
@@ -24,6 +26,8 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/token-factory" element={<TokenFactory />} />
+              <Route path="/leaderboard" element={<TokenLeaderboard />} />
+      
               <Route path="/provide-liquidity" element={<ProvideLiquidity />} />
               <Route path="/token-incentivization" element={<TokenIncentivization />} />
               {/* PYUSD Swap route removed */}

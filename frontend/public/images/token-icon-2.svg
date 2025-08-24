@@ -1,0 +1,38 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cryptoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E1BEE7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA000;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background hexagon -->
+  <polygon points="100,10 180,50 180,150 100,190 20,150 20,50" 
+           fill="url(#cryptoGradient)" 
+           stroke="#6A1B9A" 
+           stroke-width="3"/>
+  
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="60" fill="url(#innerGradient)" stroke="#FFA000" stroke-width="2"/>
+  
+  <!-- Crypto symbols -->
+  <text x="100" y="85" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#6A1B9A" font-weight="bold">
+    ₿
+  </text>
+  <text x="100" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6A1B9A" font-weight="bold">
+    ETH
+  </text>
+  
+  <!-- Decorative elements -->
+  <circle cx="60" cy="60" r="8" fill="#E1BEE7" opacity="0.8"/>
+  <circle cx="140" cy="60" r="8" fill="#E1BEE7" opacity="0.8"/>
+  <circle cx="60" cy="140" r="8" fill="#E1BEE7" opacity="0.8"/>
+  <circle cx="140" cy="140" r="8" fill="#E1BEE7" opacity="0.8"/>
+  
+  <!-- Center dot -->
+  <circle cx="100" cy="100" r="6" fill="#6A1B9A" stroke="#E1BEE7" stroke-width="2"/>
+</svg>

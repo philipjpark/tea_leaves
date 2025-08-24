@@ -5,17 +5,23 @@
  * Tests the Google Cloud AI integration with Gemma model for tea-leaves agent functionality
  */
 
-const https = require('https');
+const http = require('http');
 
-const GEMMA_URL = 'https://yoree-gemma-827561407333.europe-west1.run.app';
+const GEMMA_URL = 'http://localhost:3002';
 
 // Test prompt for tea-leaves agent strategy generation
 const testPrompt = {
-  prompt: "You are an expert tea-leaves agent specializing in quantitative trading and market analysis. Generate a simple trading strategy for Bitcoin (BTC) with moderate risk tolerance. Include entry/exit rules and risk management. Focus on tea-leaves specific indicators and patterns.",
-  max_tokens: 256,
-  temperature: 0.7,
-  top_p: 0.9,
-  top_k: 40
+  contents: [{
+    parts: [{
+      text: "You are an expert tea-leaves agent specializing in quantitative trading and market analysis. Generate a simple trading strategy for Bitcoin (BTC) with moderate risk tolerance. Include entry/exit rules and risk management. Focus on tea-leaves specific indicators and patterns."
+    }]
+  }],
+  generationConfig: {
+    maxOutputTokens: 256,
+    temperature: 0.7,
+    topP: 0.9,
+    topK: 40
+  }
 };
 
 function makeRequest(url, data) {
@@ -23,9 +29,9 @@ function makeRequest(url, data) {
     const postData = JSON.stringify(data);
     
     const options = {
-      hostname: url.replace('https://', ''),
-      port: 443,
-      path: '/v1beta/models/gemma3:4b:generateContent',
+      hostname: 'localhost',
+      port: 3002,
+      path: '/api/gemma',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +39,7 @@ function makeRequest(url, data) {
       }
     };
 
-    const req = https.request(options, (res) => {
+    const req = http.request(options, (res) => {
       let responseData = '';
       
       res.on('data', (chunk) => {
@@ -42,7 +48,9 @@ function makeRequest(url, data) {
       
       res.on('end', () => {
         try {
+          console.log('📥 Raw response received:', responseData);
           const parsed = JSON.parse(responseData);
+          console.log('📋 Parsed response:', JSON.stringify(parsed, null, 2));
           resolve(parsed);
         } catch (error) {
           reject(new Error(`Failed to parse response: ${error.message}`));
@@ -137,9 +145,15 @@ async function testTeaLeavesAgentPrompts() {
     try {
       console.log(`🔍 Testing: ${promptData.name}`);
       const response = await makeRequest(GEMMA_URL, {
-        prompt: promptData.prompt,
-        max_tokens: promptData.max_tokens,
-        temperature: 0.7
+        contents: [{
+          parts: [{
+            text: promptData.prompt
+          }]
+        }],
+        generationConfig: {
+          maxOutputTokens: promptData.max_tokens,
+          temperature: 0.7
+        }
       });
       
       if (response.candidates?.[0]?.content?.parts?.[0]?.text) {

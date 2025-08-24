@@ -19,17 +19,13 @@ import {
   Chip,
   Alert,
   Paper,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Avatar,
   IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  CircularProgress
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import {
@@ -50,6 +46,7 @@ import {
   Upload as UploadIcon,
   Description as FileIcon
 } from '@mui/icons-material';
+import AgentsWorkingPage from './AgentsWorkingPage';
 
 interface TokenFormData {
   chain: string;
@@ -64,7 +61,6 @@ interface TokenFormData {
   fundraisingAmount: string;
   pricing: string;
   liquidityOption: string;
-  imagePrompt: string;
 }
 
 interface TokenValidation {
@@ -88,7 +84,6 @@ const TokenFactory: React.FC = () => {
     fundraisingAmount: '',
     pricing: '',
     liquidityOption: '',
-    imagePrompt: ''
   });
   const [validation, setValidation] = useState<TokenValidation>({
     nameAvailable: false,
@@ -98,6 +93,8 @@ const TokenFactory: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [gemmaProcessing, setGemmaProcessing] = useState(false);
   const [gemmaResults, setGemmaResults] = useState<any>(null);
+  const [agentsWorkingOpen, setAgentsWorkingOpen] = useState(false);
+
 
   // Configuration data
   const chains = [
@@ -184,7 +181,6 @@ const TokenFactory: React.FC = () => {
       case 5: return formData.fundraisingAmount !== '';
       case 6: return formData.pricing !== '';
       case 7: return formData.liquidityOption !== '';
-      case 8: return formData.imagePrompt !== '';
       default: return false;
     }
   };
@@ -219,8 +215,6 @@ TOKEN DETAILS:
  - Previous Successes: ${formData.previousSuccesses}
  - PDF Documentation: ${formData.pdfFile ? `Uploaded: ${formData.pdfFile.name}` : 'None provided'}
 
-IMAGE GENERATION PROMPT: ${formData.imagePrompt}
-
 REQUIRED ACTIONS:
 1. SEMANTIC AGENT: Analyze token viability, market fit, and risk assessment
 2. FUNDRAISER AGENT: Alert all liquidity providers and potential investors
@@ -231,29 +225,69 @@ Please provide comprehensive analysis and actionable next steps for this token l
 
   const sendToGemma = async () => {
     setGemmaProcessing(true);
+    setPreviewOpen(false);
     
-    // Simulate API call to Google Gemma
-    setTimeout(() => {
-      setGemmaResults({
-        semanticAgent: {
-          status: 'completed',
-          analysis: 'Token shows strong market potential with clear use case. Risk level: Moderate. Recommended proceed with enhanced security measures.',
-          score: 8.5
-        },
-        fundraiserAgent: {
-          status: 'completed',
-          alerts: 'Notified 1,247 liquidity providers. 89 positive responses received. Estimated initial liquidity: $2.4M',
-          contacts: 1247
-        },
-        executionAgent: {
-          status: 'completed',
-          contracts: 'Smart contracts generated. Deployment ready. Gas optimization applied. Security audit recommended.',
-          deployment: 'Ready'
-        }
-      });
-      setGemmaProcessing(false);
-      setPreviewOpen(false);
-    }, 3000);
+    // Show agents working page
+    setAgentsWorkingOpen(true);
+  };
+
+  const handleAgentsComplete = (results: any) => {
+    setGemmaResults(results);
+    setAgentsWorkingOpen(false);
+    setGemmaProcessing(false);
+    
+    // Deploy token to leaderboard after AI analysis
+    deployTokenToLeaderboard();
+  };
+
+  const handleAgentsClose = () => {
+    setAgentsWorkingOpen(false);
+    setGemmaProcessing(false);
+  };
+
+  const deployTokenToLeaderboard = () => {
+    // Array of 5 different token icons
+    const tokenIcons = [
+      '/images/default-tree-token.svg',
+      '/images/token-icon-2.svg',
+      '/images/token-icon-3.svg',
+      '/images/token-icon-4.svg',
+      '/images/token-icon-5.svg'
+    ];
+    
+    // Randomly select a token icon
+    const randomIcon = tokenIcons[Math.floor(Math.random() * tokenIcons.length)];
+    
+    // Create token object with all details
+    const newToken = {
+      id: Date.now().toString(),
+      name: formData.tokenName,
+      symbol: formData.tokenName.substring(0, 3).toUpperCase(),
+      chain: formData.chain,
+      totalSupply: formData.fundraisingAmount,
+      description: formData.description,
+      category: formData.assetClass,
+      liquidity: formData.liquidityOption,
+      image: randomIcon, // Random token icon
+      marketCap: '0',
+      price: '0',
+      volume24h: '0',
+      change24h: '0',
+      holders: '0',
+      transactions: '0',
+      createdAt: new Date().toISOString(),
+      status: 'active',
+      aiGenerated: true,
+      strategy: `AI Analysis Score: ${gemmaResults?.semanticAgent?.score || 'N/A'}/10\n${gemmaResults?.semanticAgent?.analysis || 'AI analysis completed'}`
+    };
+
+    // Store in localStorage (in real app, this would be a database call)
+    const existingTokens = JSON.parse(localStorage.getItem('teaLeavesTokens') || '[]');
+    existingTokens.unshift(newToken);
+    localStorage.setItem('teaLeavesTokens', JSON.stringify(existingTokens));
+
+    // Show success message
+    alert(`🎉 Token "${formData.tokenName}" successfully deployed to leaderboard!\n\nNavigate to /leaderboard to view your token.`);
   };
 
   const steps = [
@@ -762,57 +796,91 @@ Please provide comprehensive analysis and actionable next steps for this token l
           <Typography variant="body2" sx={{ color: '#666', mb: 3, fontStyle: 'italic' }}>
             Liquidity provision strategy affects trading volume, price stability, and investor confidence.
           </Typography>
-          <Grid container spacing={2}>
-            {liquidityOptions.map((option) => (
-              <Grid item xs={12} md={6} key={option.id}>
-                <Card
-                  sx={{
-                    cursor: 'pointer',
-                    border: formData.liquidityOption === option.id ? '2px solid #2E7D32' : '1px solid #E0E0E0',
-                    transition: 'all 0.3s ease',
-                    '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }
-                  }}
-                  onClick={() => handleInputChange('liquidityOption', option.id)}
-                >
-                  <CardContent sx={{ p: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                      {option.name}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#666' }}>
-                      {option.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                     <Grid container spacing={2}>
+             {liquidityOptions.map((option) => (
+               <Grid item xs={12} md={6} key={option.id}>
+                 <Card
+                   sx={{
+                     cursor: 'pointer',
+                     border: formData.liquidityOption === option.id ? '3px solid #2E7D32' : '2px solid #E0E0E0',
+                     borderRadius: '16px',
+                     background: formData.liquidityOption === option.id 
+                       ? 'linear-gradient(135deg, #F8FFF8 0%, #E8F5E8 100%)'
+                       : 'linear-gradient(135deg, #FFFFFF 0%, #F8FFF8 100%)',
+                     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                     position: 'relative',
+                     overflow: 'hidden',
+                     '&:hover': { 
+                       transform: 'translateY(-4px)', 
+                       boxShadow: formData.liquidityOption === option.id
+                         ? '0 12px 32px rgba(46, 125, 50, 0.25)'
+                         : '0 8px 24px rgba(0,0,0,0.15)',
+                       borderColor: formData.liquidityOption === option.id ? '#4CAF50' : '#2E7D32'
+                     },
+                     '&::before': {
+                       content: '""',
+                       position: 'absolute',
+                       top: 0,
+                       left: 0,
+                       right: 0,
+                       height: '4px',
+                       background: formData.liquidityOption === option.id 
+                         ? 'linear-gradient(90deg, #2E7D32 0%, #4CAF50 100%)'
+                         : 'transparent',
+                       transition: 'all 0.3s ease'
+                     }
+                   }}
+                   onClick={() => handleInputChange('liquidityOption', option.id)}
+                 >
+                   <CardContent sx={{ 
+                     p: 3, 
+                     position: 'relative',
+                     zIndex: 1
+                   }}>
+                     <Typography variant="h6" sx={{ 
+                       fontWeight: 600, 
+                       mb: 1,
+                       color: formData.liquidityOption === option.id ? '#2E7D32' : '#424242'
+                     }}>
+                       {option.name}
+                     </Typography>
+                     <Typography variant="body2" sx={{ 
+                       color: formData.liquidityOption === option.id ? '#2E7D32' : '#666',
+                       lineHeight: 1.5
+                     }}>
+                       {option.description}
+                     </Typography>
+                     
+                     {/* Selection Indicator */}
+                     {formData.liquidityOption === option.id && (
+                       <Box sx={{
+                         position: 'absolute',
+                         top: '16px',
+                         right: '16px',
+                         width: '32px',
+                         height: '32px',
+                         borderRadius: '50%',
+                         background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'center',
+                         color: 'white',
+                         fontSize: '18px',
+                         fontWeight: 'bold',
+                         boxShadow: '0 4px 12px rgba(76, 175, 80, 0.4)',
+                         animation: 'pulse 2s infinite'
+                       }}>
+                         ✓
+                       </Box>
+                     )}
+                   </CardContent>
+                 </Card>
+               </Grid>
+             ))}
+           </Grid>
         </Box>
       )
     },
-    {
-      label: 'Image Generation',
-      description: 'Visual',
-      icon: <ImageIcon />,
-      content: (
-        <Box>
-          <Typography variant="h6" gutterBottom sx={{ color: '#2E7D32', mb: 3 }}>
-            Create an Image for Your Token
-          </Typography>
-          <Typography variant="body2" sx={{ color: '#666', mb: 3, fontStyle: 'italic' }}>
-            A distinctive visual identity helps with branding, marketing, and investor recognition.
-          </Typography>
-          <TextField
-            fullWidth
-            label="Image Description"
-            value={formData.imagePrompt}
-            onChange={(e) => handleInputChange('imagePrompt', e.target.value)}
-            placeholder="e.g., A futuristic golden coin with blockchain symbols, purple and green gradient background, minimalist design..."
-            multiline
-            rows={4}
-          />
-        </Box>
-      )
-    }
   ];
 
   return (
@@ -905,54 +973,65 @@ Please provide comprehensive analysis and actionable next steps for this token l
                         <Stepper activeStep={activeStep} orientation="horizontal" sx={{ 
               mb: 4,
               '& .MuiStep-root': {
-                flex: 1
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
               }
             }}>
               {steps.map((step, index) => (
                 <Step key={index}>
                   <StepLabel 
                     icon={step.icon}
-                                         sx={{ 
-                       '& .MuiStepLabel-iconContainer': {
-                         width: '48px',
-                         height: '48px',
-                         borderRadius: '50%',
-                         background: activeStep >= index 
-                           ? 'linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)'
-                           : 'linear-gradient(135deg, #E0E0E0 0%, #F5F5F5 100%)',
-                         display: 'flex',
-                         alignItems: 'center',
-                         justifyContent: 'center',
-                         margin: '0 auto 8px',
-                         boxShadow: activeStep >= index 
-                           ? '0 3px 12px rgba(46, 125, 50, 0.3)'
-                           : '0 2px 6px rgba(0, 0, 0, 0.1)',
-                         transition: 'all 0.3s ease',
-                         '&:hover': {
-                           transform: activeStep >= index ? 'scale(1.05)' : 'scale(1.02)'
-                         }
-                       },
-                       '& .MuiStepLabel-label': {
-                         color: activeStep >= index ? '#2E7D32' : '#9E9E9E',
-                         fontWeight: 700,
-                         fontSize: '0.75rem',
-                         textTransform: 'uppercase',
-                         letterSpacing: '0.5px',
-                         marginTop: '6px'
-                       }
-                     }}
+                    sx={{ 
+                      textAlign: 'center',
+                      '& .MuiStepLabel-iconContainer': {
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        background: activeStep >= index 
+                          ? 'linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)'
+                          : 'linear-gradient(135deg, #E0E0E0 0%, #F5F5F5 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 8px',
+                        boxShadow: activeStep >= index 
+                          ? '0 3px 12px rgba(46, 125, 50, 0.3)'
+                          : '0 2px 6px rgba(0, 0, 0, 0.1)',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          transform: activeStep >= index ? 'scale(1.05)' : 'scale(1.02)'
+                        },
+                        '& svg': {
+                          fontSize: '24px',
+                          color: 'white'
+                        }
+                      },
+                      '& .MuiStepLabel-label': {
+                        color: activeStep >= index ? '#2E7D32' : '#9E9E9E',
+                        fontWeight: 700,
+                        fontSize: '0.75rem',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        marginTop: '6px',
+                        textAlign: 'center'
+                      }
+                    }}
                   >
-                                         <Typography variant="caption" sx={{ 
-                       color: activeStep >= index ? '#2E7D32' : '#9E9E9E', 
-                       display: 'block', 
-                       maxWidth: '120px', 
-                       lineHeight: 1.2,
-                       fontSize: '0.7rem',
-                       fontStyle: 'italic',
-                       opacity: activeStep >= index ? 0.9 : 0.6
-                     }}>
-                       {step.description}
-                     </Typography>
+                    <Typography variant="caption" sx={{ 
+                      color: activeStep >= index ? '#2E7D32' : '#9E9E9E', 
+                      display: 'block', 
+                      maxWidth: '120px', 
+                      lineHeight: 1.2,
+                      fontSize: '0.7rem',
+                      fontStyle: 'italic',
+                      opacity: activeStep >= index ? 0.9 : 0.6,
+                      textAlign: 'center',
+                      mx: 'auto'
+                    }}>
+                      {step.description}
+                    </Typography>
                   </StepLabel>
                 </Step>
               ))}
@@ -1097,7 +1176,7 @@ Please provide comprehensive analysis and actionable next steps for this token l
             color: '#2E7D32',
             fontWeight: 600
           }}>
-            Preview & Send to Google Gemma
+            Preview & Send to Agents
             <IconButton onClick={() => setPreviewOpen(false)} size="small">
               <CloseIcon />
             </IconButton>
@@ -1183,7 +1262,7 @@ Please provide comprehensive analysis and actionable next steps for this token l
                 '&:hover': { bgcolor: '#6A1B9A', opacity: 0.9 }
               }}
             >
-              {gemmaProcessing ? 'Processing...' : 'Send to Google Gemma'}
+              {gemmaProcessing ? 'Processing...' : 'Send to Agents'}
             </Button>
           </DialogActions>
         </Dialog>
@@ -1278,13 +1357,45 @@ Please provide comprehensive analysis and actionable next steps for this token l
                 >
                   🚀 Launch Your Token
                 </Button>
+                
+                {/* Navigation to Leaderboard */}
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="body1" sx={{ color: '#666', mb: 2 }}>
+                    Your token has been deployed to the leaderboard! 🎉
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => window.location.href = '/leaderboard'}
+                    sx={{ 
+                      borderColor: '#4CAF50',
+                      color: '#4CAF50',
+                      '&:hover': { 
+                        borderColor: '#2E7D32',
+                        backgroundColor: 'rgba(76, 175, 80, 0.04)'
+                      }
+                    }}
+                  >
+                    📊 View Token Leaderboard
+                  </Button>
+                </Box>
               </Box>
             </CardContent>
           </Card>
+                 )}
+         
+         
+       </Container>
+       {/* Agents Working Page */}
+        {agentsWorkingOpen && (
+          <AgentsWorkingPage
+            formData={formData}
+            onComplete={handleAgentsComplete}
+            onClose={handleAgentsClose}
+          />
         )}
-      </Container>
-    </Box>
-  );
-};
+     </Box>
+   );
+ };
 
 export default TokenFactory; 

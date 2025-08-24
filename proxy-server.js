@@ -4,7 +4,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3001;
+const PORT = 3002;
 
 // Tea-leaves Gemma API configuration
 const gemmaUrl = "https://yoree-gemma-827561407333.europe-west1.run.app/v1beta/models/gemma3:4b:generateContent";
@@ -61,11 +61,65 @@ app.get('/api/tea-leaves/status', (req, res) => {
   });
 });
 
+// Imagen API proxy endpoint
+app.post('/api/imagen', async (req, res) => {
+  try {
+    console.log('🎨 Proxying request to Google Imagen API...');
+    console.log('📤 Request body:', JSON.stringify(req.body, null, 2));
+    
+    // Use the correct Imagen API endpoint with v1beta and proper model ID
+    const response = await axios.post('https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-fast-generate-001:generate', {
+      prompt: {
+        text: req.body.prompt.text
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': process.env.GOOGLE_CLOUD_API_KEY,
+        'User-Agent': 'Tea-Leaves-Platform/1.0'
+      },
+      timeout: 60000
+    });
+    
+    console.log('✅ Imagen API response received:', response.status);
+    
+    // Extract and return clean image data
+    if (response.data && response.data.candidates && response.data.candidates[0]) {
+      const candidate = response.data.candidates[0];
+      if (candidate.image && candidate.image.data) {
+        res.json({
+          b64: candidate.image.data,
+          contentType: candidate.image.mimeType || 'image/png'
+        });
+      } else {
+        res.status(500).json({
+          error: 'No image data in response',
+          details: 'Response missing image data'
+        });
+      }
+    } else {
+      res.status(500).json({
+        error: 'Invalid response format',
+        details: 'Response missing candidates'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ Imagen API proxy error:', error.message);
+    if (error.response) {
+      console.error('❌ Error response:', error.response.status, error.response.data);
+    }
+    res.status(500).json({
+      error: 'Failed to proxy request to Google Imagen API',
+      details: error.message
+    });
+  }
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Tea-Leaves Proxy Server running on http://localhost:${PORT}`);
   console.log(`📡 Proxying requests to Tea-leaves Gemma API`);
   console.log(`🔑 API key: ${process.env.GOOGLE_CLOUD_API_KEY ? '✓ Loaded' : '✗ Missing'}`);
-  console.log(`🔍 Environment check: ${process.env.GOOGLE_CLOUD_API_KEY ? 'Key length: ' + process.env.GOOGLE_CLOUD_API_KEY.length : 'No key found'}`);
   console.log(`🌐 Tea-leaves platform: v1.0.0`);
 }); 

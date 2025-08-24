@@ -41,6 +41,7 @@ const Navbar: React.FC = () => {
       icon: <BuildIcon sx={{ fontSize: 18 }} />,
       badge: 'NEW'
     },
+    
     {
       path: '/provide-liquidity',
       label: 'Provide Liquidity',
@@ -48,7 +49,7 @@ const Navbar: React.FC = () => {
       badge: null
     },
     {
-      path: '/token-incentivization',
+      path: '/leaderboard',
       label: 'Leaderboard',
       icon: <LeaderboardIcon sx={{ fontSize: 18 }} />,
       badge: null

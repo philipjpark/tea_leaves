@@ -46,6 +46,7 @@ import {
   AccountBalance as TreasuryIcon,
   Close as CloseIcon
 } from '@mui/icons-material';
+import LiquidityProviderAgentsPage from './LiquidityProviderAgentsPage';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -82,6 +83,7 @@ const ProvideLiquidity: React.FC = () => {
   const [systemPrompt, setSystemPrompt] = useState('');
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [githubLinkOpen, setGithubLinkOpen] = useState(false);
+  const [showAgents, setShowAgents] = useState(false);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -556,7 +558,10 @@ const ProvideLiquidity: React.FC = () => {
                           setComingSoonOpen(true);
                         } else if (method.id === 'developer') {
                           setGithubLinkOpen(true);
-                        } else {
+                        } else if (method.id === 'liquidity-provider') {
+                          setShowAgents(true);
+                        }
+                        else {
                           openWorkflow(method);
                         }
                       }}
@@ -837,6 +842,16 @@ const ProvideLiquidity: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+                 {/* Liquidity Provider Agents Page */}
+           <LiquidityProviderAgentsPage 
+             open={showAgents} 
+             onComplete={(results) => {
+               console.log('Liquidity provider agents completed:', results);
+               setShowAgents(false);
+             }}
+             onClose={() => setShowAgents(false)} 
+           />
     </Box>
   );
 };

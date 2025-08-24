@@ -231,7 +231,23 @@ Please provide comprehensive analysis and actionable next steps for this token l
   };
 
   const handleAgentsComplete = (results: any) => {
-    setGemmaResults(results);
+    // Ensure the results have the expected structure
+    const normalizedResults = {
+      semanticAgent: results.semanticAgent || results.liquidityAgent || {
+        analysis: results.semanticAgent?.marketAnalysis || results.semanticAgent?.message || 'AI analysis completed',
+        score: results.semanticAgent?.score || 'N/A'
+      },
+      fundraiserAgent: results.fundraiserAgent || results.liquidityAgent || {
+        alerts: results.fundraiserAgent?.liquidityStrategy || results.fundraiserAgent?.message || 'Liquidity strategy completed',
+        contacts: results.fundraiserAgent?.contacts || 'Strategy'
+      },
+      executionAgent: results.executionAgent || results.smartContractAgent || {
+        contracts: results.executionAgent?.contractSecurity || results.executionAgent?.message || 'Smart contract completed',
+        deployment: results.executionAgent?.deployment || 'Ready'
+      }
+    };
+    
+    setGemmaResults(normalizedResults);
     setAgentsWorkingOpen(false);
     setGemmaProcessing(false);
     
@@ -245,6 +261,12 @@ Please provide comprehensive analysis and actionable next steps for this token l
   };
 
   const deployTokenToLeaderboard = () => {
+    // Safety check - ensure we have valid results before deploying
+    if (!gemmaResults || !gemmaResults.semanticAgent) {
+      console.log('No valid AI results available, skipping token deployment');
+      return;
+    }
+    
     // Array of 5 different token icons
     const tokenIcons = [
       '/images/default-tree-token.svg',
@@ -277,7 +299,7 @@ Please provide comprehensive analysis and actionable next steps for this token l
       createdAt: new Date().toISOString(),
       status: 'active',
       aiGenerated: true,
-      strategy: `AI Analysis Score: ${gemmaResults?.semanticAgent?.score || 'N/A'}/10\n${gemmaResults?.semanticAgent?.analysis || 'AI analysis completed'}`
+      strategy: `AI Analysis Score: ${gemmaResults?.semanticAgent?.score || 'N/A'}/10\n${gemmaResults?.semanticAgent?.analysis || gemmaResults?.semanticAgent?.marketAnalysis || gemmaResults?.semanticAgent?.message || 'AI analysis completed'}`
     };
 
     // Store in localStorage (in real app, this would be a database call)
@@ -1258,11 +1280,11 @@ Please provide comprehensive analysis and actionable next steps for this token l
         </Dialog>
 
         {/* Gemma Results */}
-        {gemmaResults && (
+        {gemmaResults && gemmaResults.semanticAgent && (
           <Card sx={{ mt: 4, borderRadius: '16px', border: '2px solid #2E7D32' }}>
             <CardContent>
               <Typography variant="h5" gutterBottom sx={{ color: '#2E7D32', fontWeight: 600, mb: 3 }}>
-                🎯 Google Gemma Analysis Results
+                🎯 AI Agent Analysis Results
               </Typography>
               
               <Grid container spacing={3}>
@@ -1278,10 +1300,13 @@ Please provide comprehensive analysis and actionable next steps for this token l
                         </Typography>
                       </Box>
                       <Typography variant="body2" sx={{ color: '#1976D2', mb: 2 }}>
-                        {gemmaResults.semanticAgent.analysis}
+                        {gemmaResults.semanticAgent?.analysis || 
+                         gemmaResults.semanticAgent?.marketAnalysis || 
+                         gemmaResults.semanticAgent?.message || 
+                         'AI analysis completed'}
                       </Typography>
                       <Chip 
-                        label={`Score: ${gemmaResults.semanticAgent.score}/10`} 
+                        label={`Score: ${gemmaResults.semanticAgent?.score || 'N/A'}/10`} 
                         color="primary" 
                         size="small" 
                       />
@@ -1301,10 +1326,13 @@ Please provide comprehensive analysis and actionable next steps for this token l
                         </Typography>
                       </Box>
                       <Typography variant="body2" sx={{ color: '#2E7D32', mb: 2 }}>
-                        {gemmaResults.fundraiserAgent.alerts}
+                        {gemmaResults.fundraiserAgent?.alerts || 
+                         gemmaResults.fundraiserAgent?.liquidityStrategy || 
+                         gemmaResults.fundraiserAgent?.message || 
+                         'Liquidity strategy analysis completed'}
                       </Typography>
                       <Chip 
-                        label={`${gemmaResults.fundraiserAgent.contacts} contacts`} 
+                        label={`${gemmaResults.fundraiserAgent?.contacts || 'Strategy'}`} 
                         color="success" 
                         size="small" 
                       />
@@ -1324,10 +1352,13 @@ Please provide comprehensive analysis and actionable next steps for this token l
                         </Typography>
                       </Box>
                       <Typography variant="body2" sx={{ color: '#E65100', mb: 2 }}>
-                        {gemmaResults.executionAgent.contracts}
+                        {gemmaResults.executionAgent?.contracts || 
+                         gemmaResults.executionAgent?.contractSecurity || 
+                         gemmaResults.executionAgent?.message || 
+                         'Smart contract analysis completed'}
                       </Typography>
                       <Chip 
-                        label={gemmaResults.executionAgent.deployment} 
+                        label={gemmaResults.executionAgent?.deployment || 'Ready'} 
                         color="warning" 
                         size="small" 
                       />
@@ -1372,10 +1403,8 @@ Please provide comprehensive analysis and actionable next steps for this token l
               </Box>
             </CardContent>
           </Card>
-                 )}
-         
-         
-       </Container>
+        )}
+      </Container>
        {/* Agents Working Page */}
         {agentsWorkingOpen && (
           <AgentsWorkingPage

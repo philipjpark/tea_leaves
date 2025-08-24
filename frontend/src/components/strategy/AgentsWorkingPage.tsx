@@ -122,8 +122,16 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
   const [agentResults, setAgentResults] = useState<any>(null);
   const [canDeploy, setCanDeploy] = useState(false);
   const [deploymentSuccess, setDeploymentSuccess] = useState(false);
+  const [tokenDeployed, setTokenDeployed] = useState(false);
   const [systemLogs, setSystemLogs] = useState<string[]>([]);
   const [currentAgentDetails, setCurrentAgentDetails] = useState<string>('');
+
+  // Reset deployment state when component mounts (new token creation)
+  useEffect(() => {
+    setTokenDeployed(false);
+    setDeploymentSuccess(false);
+    setCanDeploy(false);
+  }, []);
 
   useEffect(() => {
     if (!isPaused) {
@@ -281,6 +289,12 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
   };
 
   const handleDeployToLeaderboard = () => {
+    // Check if token has already been deployed
+    if (tokenDeployed) {
+      console.log('Token already deployed, skipping duplicate creation');
+      return;
+    }
+
     // Create token data for leaderboard
     const tokenData = {
       id: Date.now().toString(),
@@ -289,26 +303,59 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
       chain: formData.chain || 'Ethereum',
       assetClass: formData.assetClass || 'DeFi',
       description: formData.description || 'AI-powered DeFi strategy token',
+      totalSupply: formData.fundraisingAmount || '$100,000',
       fundraisingAmount: formData.fundraisingAmount || '$100,000',
+      category: formData.assetClass || 'DeFi',
       pricing: formData.pricing || 'Market-based',
       liquidityOption: formData.liquidityOption || 'Automated',
       image: '/images/default-tree-token.svg', // Default tree token image
       createdAt: new Date().toISOString(),
       status: 'active',
-      marketCap: '$0',
-      volume24h: '$0',
-      priceChange24h: '0%',
-      liquidity: '$0',
+      price: '0',
+      marketCap: '0',
+      volume24h: '0',
+      priceChange24h: '0',
+      liquidity: '0',
       holders: 0,
+      transactions: '0',
+      aiGenerated: true,
+      strategy: `AI Analysis Score: ${agentResults?.semanticAgent?.score || 'N/A'}/10\n${agentResults?.semanticAgent?.analysis || agentResults?.semanticAgent?.marketAnalysis || agentResults?.semanticAgent?.message || 'AI analysis completed'}`,
       agentResults: agentResults
     };
 
-    // Store in localStorage for leaderboard
+    // Check for existing tokens with the same name to prevent duplicates
     const existingTokens = JSON.parse(localStorage.getItem('teaLeavesTokens') || '[]');
+    const tokenExists = existingTokens.some((token: any) => 
+      token.name === tokenData.name && 
+      token.symbol === tokenData.symbol &&
+      token.chain === tokenData.chain &&
+      // Also check if it was created in the last 5 minutes to prevent rapid duplicates
+      (new Date().getTime() - new Date(token.createdAt).getTime()) < 300000
+    );
+
+    if (tokenExists) {
+      console.log('Token with this name/symbol/chain already exists, skipping duplicate creation');
+      // Still show success but don't create duplicate
+      setDeploymentSuccess(true);
+      setTokenDeployed(true);
+      
+      // Find the existing token
+      const existingToken = existingTokens.find((t: any) => 
+        t.name === tokenData.name && 
+        t.symbol === tokenData.symbol &&
+        t.chain === tokenData.chain
+      );
+      
+      onComplete({ ...agentResults, deployed: true, tokenData: existingToken });
+      return;
+    }
+
+    // Store in localStorage for leaderboard
     existingTokens.push(tokenData);
     localStorage.setItem('teaLeavesTokens', JSON.stringify(existingTokens));
 
-    // Show deployment success
+    // Mark as deployed and show success
+    setTokenDeployed(true);
     setDeploymentSuccess(true);
     
     // Call onComplete with deployment success
@@ -658,7 +705,7 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
         </motion.div>
 
         {/* Completion Section with Deploy Button */}
-        {agents.every(agent => agent.status === 'completed') && (
+        {agents.every(agent => agent.status === 'completed') && !deploymentSuccess && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -702,18 +749,23 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
                     variant="contained"
                     size="large"
                     onClick={handleDeployToLeaderboard}
+                    disabled={tokenDeployed}
                     startIcon={<LaunchIcon />}
                     sx={{
-                      background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
+                      background: tokenDeployed 
+                        ? 'linear-gradient(135deg, #9E9E9E, #757575)' 
+                        : 'linear-gradient(135deg, #4CAF50, #2E7D32)',
                       px: 4,
                       py: 1.5,
                       fontSize: '1.1rem',
                       '&:hover': {
-                        background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
+                        background: tokenDeployed 
+                          ? 'linear-gradient(135deg, #9E9E9E, #757575)' 
+                          : 'linear-gradient(135deg, #2E7D32, #1B5E20)'
                       }
                     }}
                   >
-                    🚀 Deploy to Leaderboard
+                    {tokenDeployed ? '✅ Token Deployed' : '🚀 Deploy to Leaderboard'}
                   </Button>
                 </Box>
               </CardContent>

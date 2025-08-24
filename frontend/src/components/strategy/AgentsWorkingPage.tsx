@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
+import TokenCreationResultsPage from './TokenCreationResultsPage';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   SmartToy as AgentIcon,
@@ -41,7 +42,7 @@ interface AgentWork {
   icon: React.ReactNode;
   details: string[];
   currentTask: string;
-  estimatedTime: string;
+
 }
 
 interface AgentsWorkingPageProps {
@@ -70,7 +71,7 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
         'Finalizing viability assessment report'
       ],
       currentTask: 'Initializing analysis...',
-      estimatedTime: '2-3 minutes'
+      
     },
     {
       id: 'fundraiser',
@@ -90,7 +91,7 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
         'Finalizing investor communication strategy'
       ],
       currentTask: 'Preparing to launch...',
-      estimatedTime: '3-4 minutes'
+      
     },
     {
       id: 'execution',
@@ -110,7 +111,7 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
         'Finalizing deployment readiness checklist'
       ],
       currentTask: 'Standby mode...',
-      estimatedTime: '4-5 minutes'
+      
     }
   ]);
 
@@ -118,6 +119,9 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
   const [currentPhase, setCurrentPhase] = useState('Initialization');
   const [isPaused, setIsPaused] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [agentResults, setAgentResults] = useState<any>(null);
+  const [canDeploy, setCanDeploy] = useState(false);
+  const [deploymentSuccess, setDeploymentSuccess] = useState(false);
   const [systemLogs, setSystemLogs] = useState<string[]>([]);
   const [currentAgentDetails, setCurrentAgentDetails] = useState<string>('');
 
@@ -239,21 +243,76 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
     const results = {
       semanticAgent: {
         status: 'completed',
-        analysis: 'Token shows strong market potential with clear use case. Risk level: Moderate. Recommended proceed with enhanced security measures.',
-        score: 8.5
+        marketAnalysis: 'High market demand for DeFi tokens with strong community focus',
+        competitionAnalysis: 'Moderate competition with unique value proposition identified',
+        regulatoryCompliance: 'Compliant with current DeFi regulations and guidelines',
+        tokenomicsModel: 'Sustainable tokenomics with 60% community allocation',
+        riskAssessment: 'Low to medium risk with strong mitigation strategies',
+        message: 'Market analysis completed successfully. Token shows strong potential for growth.'
       },
-      fundraiserAgent: {
+      liquidityAgent: {
         status: 'completed',
-        alerts: 'Notified 1,247 liquidity providers. 89 positive responses received. Estimated initial liquidity: $2.4M',
-        contacts: 1247
+        liquidityStrategy: 'Multi-pool approach with automated market making',
+        poolDistribution: '40% ETH pair, 30% USDC pair, 30% stablecoin pairs',
+        yieldOptimization: 'Expected 15-25% APY through liquidity mining',
+        marketMaking: 'Advanced AMM with concentrated liquidity positions',
+        message: 'Liquidity strategy optimized for maximum yield and stability.'
       },
-      executionAgent: {
+      smartContractAgent: {
         status: 'completed',
-        contracts: 'Smart contracts generated. Deployment ready. Gas optimization applied. Security audit recommended.',
-        deployment: 'Ready'
+        contractSecurity: 'High security with multiple audit recommendations',
+        gasOptimization: 'Optimized for cost-effective transactions',
+        upgradeability: 'Modular design with upgradeable components',
+        auditStatus: 'Ready for professional security audit',
+        message: 'Smart contract architecture completed with security best practices.'
+      },
+      tokenSpecs: {
+        name: formData.tokenName || 'TeaLeaves Token',
+        symbol: formData.tokenSymbol || 'TEA',
+        totalSupply: '1,000,000,000 TEA',
+        initialPrice: '$0.10',
+        marketCap: '$100,000,000',
+        image: '/images/default-tree-token.svg'
       }
     };
-    onComplete(results);
+    setAgentResults(results);
+    setShowResults(true);
+    setCanDeploy(true);
+  };
+
+  const handleDeployToLeaderboard = () => {
+    // Create token data for leaderboard
+    const tokenData = {
+      id: Date.now().toString(),
+      name: formData.tokenName || 'TeaLeaves Token',
+      symbol: formData.tokenSymbol || 'TEA',
+      chain: formData.chain || 'Ethereum',
+      assetClass: formData.assetClass || 'DeFi',
+      description: formData.description || 'AI-powered DeFi strategy token',
+      fundraisingAmount: formData.fundraisingAmount || '$100,000',
+      pricing: formData.pricing || 'Market-based',
+      liquidityOption: formData.liquidityOption || 'Automated',
+      image: '/images/default-tree-token.svg', // Default tree token image
+      createdAt: new Date().toISOString(),
+      status: 'active',
+      marketCap: '$0',
+      volume24h: '$0',
+      priceChange24h: '0%',
+      liquidity: '$0',
+      holders: 0,
+      agentResults: agentResults
+    };
+
+    // Store in localStorage for leaderboard
+    const existingTokens = JSON.parse(localStorage.getItem('teaLeavesTokens') || '[]');
+    existingTokens.push(tokenData);
+    localStorage.setItem('teaLeavesTokens', JSON.stringify(existingTokens));
+
+    // Show deployment success
+    setDeploymentSuccess(true);
+    
+    // Call onComplete with deployment success
+    onComplete({ ...agentResults, deployed: true, tokenData });
   };
 
   return (
@@ -543,7 +602,7 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
                     {/* Estimated Time */}
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="caption" sx={{ color: '#B0BEC5' }}>
-                        Estimated Time: {agent.estimatedTime}
+    
                       </Typography>
                     </Box>
                   </CardContent>
@@ -597,46 +656,129 @@ const AgentsWorkingPage: React.FC<AgentsWorkingPageProps> = ({ formData, onCompl
             </CardContent>
           </Card>
         </motion.div>
+
+        {/* Completion Section with Deploy Button */}
+        {agents.every(agent => agent.status === 'completed') && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+          >
+            <Card sx={{ 
+              mt: 4,
+              background: 'rgba(76, 175, 80, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(76, 175, 80, 0.3)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>
+                  🎉 Token Creation Complete!
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 4, fontWeight: 500 }}>
+                  All AI agents have successfully completed their analysis. Your token is ready to be deployed to the Leaderboard!
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleComplete}
+                    startIcon={<LaunchIcon />}
+                    sx={{
+                      background: 'linear-gradient(135deg, #2196F3, #1976D2)',
+                      px: 4,
+                      py: 1.5,
+                      fontSize: '1.1rem',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #1976D2, #1565C0)'
+                      }
+                    }}
+                  >
+                    View Results
+                  </Button>
+                  
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleDeployToLeaderboard}
+                    startIcon={<LaunchIcon />}
+                    sx={{
+                      background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
+                      px: 4,
+                      py: 1.5,
+                      fontSize: '1.1rem',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
+                      }
+                    }}
+                  >
+                    🚀 Deploy to Leaderboard
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Deployment Success Message */}
+        {deploymentSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card sx={{ 
+              mt: 4,
+              background: 'rgba(76, 175, 80, 0.2)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(76, 175, 80, 0.4)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>
+                  🎉 Token Successfully Deployed!
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 4, fontWeight: 500 }}>
+                  Your token has been successfully deployed to the Leaderboard! You can now view it in the Token Leaderboard section.
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => onComplete({ deployed: true, message: 'Token deployed successfully' })}
+                    startIcon={<LaunchIcon />}
+                    sx={{
+                      background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
+                      px: 4,
+                      py: 1.5,
+                      fontSize: '1.1rem',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
+                      }
+                    }}
+                  >
+                    Continue to App
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </Container>
 
-      {/* Results Dialog */}
-      <Dialog
-        open={showResults}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '20px'
-          }
-        }}
-      >
-        <DialogTitle sx={{ textAlign: 'center', color: '#2E7D32' }}>
-          🎉 Token Creation Complete!
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ textAlign: 'center', mb: 3 }}>
-            All AI agents have successfully completed their analysis and preparation for your token launch.
-          </Typography>
-          <Box sx={{ textAlign: 'center' }}>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleComplete}
-              startIcon={<LaunchIcon />}
-              sx={{
-                background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
-                }
-              }}
-            >
-              View Results & Deploy Token
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+      {/* Results Page */}
+      {showResults && agentResults && (
+        <TokenCreationResultsPage
+          results={agentResults}
+          onClose={() => setShowResults(false)}
+          onProceed={() => {
+            setShowResults(false);
+            handleDeployToLeaderboard();
+          }}
+        />
+      )}
 
       <style>
         {`

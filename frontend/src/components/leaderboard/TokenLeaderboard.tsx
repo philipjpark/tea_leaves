@@ -25,6 +25,7 @@ import {
   DialogActions,
   Container
 } from '@mui/material';
+import TokenCreationResultsPage from '../strategy/TokenCreationResultsPage';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -66,6 +67,8 @@ const TokenLeaderboard: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tokenToDelete, setTokenToDelete] = useState<TokenData | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [selectedToken, setSelectedToken] = useState<TokenData | null>(null);
 
   useEffect(() => {
     // Load tokens from localStorage (in real app, this would be from your database)
@@ -150,6 +153,11 @@ const TokenLeaderboard: React.FC = () => {
   const handleDeleteToken = (token: TokenData) => {
     setTokenToDelete(token);
     setDeleteDialogOpen(true);
+  };
+
+  const handleViewTokenResults = (token: TokenData) => {
+    setSelectedToken(token);
+    setShowResults(true);
   };
 
   const confirmDelete = () => {
@@ -393,8 +401,12 @@ const TokenLeaderboard: React.FC = () => {
                   {/* Actions */}
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
-                      <Tooltip title="View Details">
-                        <IconButton size="small" color="primary">
+                      <Tooltip title="View Token Results">
+                        <IconButton 
+                          size="small" 
+                          color="primary"
+                          onClick={() => handleViewTokenResults(token)}
+                        >
                           <VisibilityIcon />
                         </IconButton>
                       </Tooltip>
@@ -447,7 +459,7 @@ const TokenLeaderboard: React.FC = () => {
                   {tokens.filter(t => t.aiGenerated).length}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#666' }}>
-                  AI-Generated
+                  Testnet
                 </Typography>
               </Box>
             </Grid>
@@ -506,9 +518,52 @@ const TokenLeaderboard: React.FC = () => {
             Delete Token
           </Button>
         </DialogActions>
-      </Dialog>
-    </>
-  );
-};
+              </Dialog>
 
-export default TokenLeaderboard;
+        {/* Token Creation Results Page */}
+        {showResults && selectedToken && (
+          <TokenCreationResultsPage
+            results={{
+              semanticAgent: {
+                status: 'completed',
+                marketAnalysis: `Market analysis for ${selectedToken.name} shows strong potential in the ${selectedToken.category} sector`,
+                competitionAnalysis: 'Competitive positioning analyzed with unique value propositions identified',
+                regulatoryCompliance: 'Compliance verified for current regulatory framework',
+                tokenomicsModel: `Tokenomics model optimized for ${selectedToken.totalSupply} total supply`,
+                riskAssessment: 'Risk assessment completed with mitigation strategies in place',
+                message: 'Market analysis completed successfully with positive outlook.'
+              },
+              liquidityAgent: {
+                status: 'completed',
+                liquidityStrategy: `Liquidity strategy implemented with ${selectedToken.liquidity} allocation`,
+                poolDistribution: 'Multi-pool distribution for optimal market coverage',
+                yieldOptimization: 'Yield optimization strategies implemented',
+                marketMaking: 'Advanced market making protocols activated',
+                message: 'Liquidity strategy successfully implemented and optimized.'
+              },
+              smartContractAgent: {
+                status: 'completed',
+                contractSecurity: 'Smart contract security verified and audited',
+                gasOptimization: 'Gas optimization implemented for cost efficiency',
+                upgradeability: 'Upgradeable contract architecture deployed',
+                auditStatus: 'Security audit completed and passed',
+                message: 'Smart contract deployment successful with security measures.'
+              },
+              tokenSpecs: {
+                name: selectedToken.name,
+                symbol: selectedToken.symbol,
+                totalSupply: selectedToken.totalSupply,
+                initialPrice: selectedToken.price,
+                marketCap: selectedToken.marketCap,
+                image: selectedToken.image
+              }
+            }}
+            onClose={() => setShowResults(false)}
+            onProceed={() => setShowResults(false)}
+          />
+        )}
+      </>
+    );
+  };
+  
+  export default TokenLeaderboard;

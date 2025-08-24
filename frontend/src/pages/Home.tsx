@@ -291,7 +291,7 @@ const Home: React.FC = () => {
                         }
                       }}
                     >
-                      Yield Now...
+                      Contribute & Yield
                     </Button>
                   </motion.div>
                 </Box>

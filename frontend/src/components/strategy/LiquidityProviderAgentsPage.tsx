@@ -17,6 +17,7 @@ import {
   DialogContent,
   DialogActions
 } from '@mui/material';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   SmartToy as AgentIcon,
@@ -43,87 +44,114 @@ interface AgentWork {
   icon: React.ReactNode;
   details: string[];
   currentTask: string;
-  estimatedTime: string;
+
   riskLevel?: 'low' | 'medium' | 'high';
   complianceStatus?: 'pending' | 'approved' | 'rejected';
 }
 
 interface LiquidityProviderAgentsPageProps {
   open: boolean;
+  flowData?: any;
   onComplete: (results: any) => void;
   onClose: () => void;
 }
 
-const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = ({ open, onComplete, onClose }) => {
+const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = ({ open, flowData, onComplete, onClose }) => {
   const [agents, setAgents] = useState<AgentWork[]>([
     {
-      id: 'kyc',
-      name: 'KYC Agent',
-      description: 'Verifying identity, compliance, and regulatory requirements',
-      status: 'waiting',
-      progress: 0,
-      color: '#2196F3',
-      icon: <KYCIcon />,
-      details: [
-        'Initializing identity verification protocols...',
-        'Scanning government databases for identity validation',
-        'Verifying address and residency documentation',
-        'Checking regulatory compliance status',
-        'Validating financial background and history',
-        'Running anti-money laundering (AML) checks',
-        'Finalizing KYC compliance report'
-      ],
-      currentTask: 'Initializing identity verification...',
-      estimatedTime: '3-4 minutes',
-      complianceStatus: 'pending'
+              id: 'kyc',
+        name: 'KYC Agent',
+        description: flowData ? `Verifying ${flowData.entityType} compliance for ${flowData.jurisdiction}` : 'Verifying identity, compliance, and regulatory requirements',
+        status: 'waiting',
+        progress: 0,
+        color: '#2196F3',
+        icon: <KYCIcon />,
+        details: flowData ? [
+          `Initializing ${flowData.entityType} verification protocols...`,
+          `Scanning ${flowData.jurisdiction} regulatory databases`,
+          'Verifying address and residency documentation',
+          'Checking regulatory compliance status',
+          'Validating financial background and history',
+          'Running anti-money laundering (AML) checks',
+          'Finalizing KYC compliance report'
+        ] : [
+          'Initializing identity verification protocols...',
+          'Scanning government databases for identity validation',
+          'Verifying address and residency documentation',
+          'Checking regulatory compliance status',
+          'Validating financial background and history',
+          'Running anti-money laundering (AML) checks',
+          'Finalizing KYC compliance report'
+        ],
+        currentTask: 'Initializing identity verification...',
+
+        complianceStatus: 'pending'
     },
     {
-      id: 'budget',
-      name: 'Budget Agent',
-      description: 'Analyzing liquidity requirements and financial planning',
-      status: 'waiting',
-      progress: 0,
-      color: '#4CAF50',
-      icon: <BudgetIcon />,
-      details: [
-        'Initializing financial analysis algorithms...',
-        'Calculating optimal liquidity pool requirements',
-        'Analyzing market depth and volume patterns',
-        'Estimating capital efficiency metrics',
-        'Projecting yield and return calculations',
-        'Optimizing risk-adjusted portfolio allocation',
-        'Finalizing budget and liquidity strategy'
-      ],
-      currentTask: 'Preparing financial analysis...',
-      estimatedTime: '2-3 minutes'
+              id: 'budget',
+        name: 'Budget Agent',
+        description: flowData ? `Analyzing ${flowData.liquidityAmount} liquidity strategy for ${flowData.positionSize}` : 'Analyzing liquidity requirements and financial planning',
+        status: 'waiting',
+        progress: 0,
+        color: '#4CAF50',
+        icon: <BudgetIcon />,
+        details: flowData ? [
+          `Initializing ${flowData.riskTolerance} risk analysis algorithms...`,
+          `Calculating optimal ${flowData.poolTypes} pool requirements`,
+          'Analyzing market depth and volume patterns',
+          'Estimating capital efficiency metrics',
+          `Projecting ${flowData.yieldExpectation} yield calculations`,
+          'Optimizing risk-adjusted portfolio allocation',
+          'Finalizing budget and liquidity strategy'
+        ] : [
+          'Initializing financial analysis algorithms...',
+          'Calculating optimal liquidity pool requirements',
+          'Analyzing market depth and volume patterns',
+          'Estimating capital efficiency metrics',
+          'Projecting yield and return calculations',
+          'Optimizing risk-adjusted portfolio allocation',
+          'Finalizing budget and liquidity strategy'
+        ],
+        currentTask: 'Preparing financial analysis...',
+
     },
     {
-      id: 'validator',
-      name: 'Validator Agent',
-      description: 'Validating smart contracts and security protocols',
-      status: 'waiting',
-      progress: 0,
-      color: '#FF9800',
-      icon: <ValidatorIcon />,
-      details: [
-        'Initializing smart contract validation environment...',
-        'Auditing smart contract security and logic',
-        'Validating liquidity pool mathematics',
-        'Checking for common vulnerabilities and exploits',
-        'Verifying oracle integrations and price feeds',
-        'Testing emergency shutdown procedures',
-        'Finalizing security validation report'
-      ],
-      currentTask: 'Standby mode...',
-      estimatedTime: '4-5 minutes',
-      riskLevel: 'low'
+              id: 'validator',
+        name: 'Validator Agent',
+        description: flowData ? `Validating ${flowData.preferredChains.join(', ')} smart contracts for ${flowData.automationLevel} automation` : 'Validating smart contracts and security protocols',
+        status: 'waiting',
+        progress: 0,
+        color: '#FF9800',
+        icon: <ValidatorIcon />,
+        details: flowData ? [
+          `Initializing ${flowData.preferredChains.join(', ')} validation environment...`,
+          'Auditing smart contract security and logic',
+          'Validating liquidity pool mathematics',
+          'Checking for common vulnerabilities and exploits',
+          'Verifying oracle integrations and price feeds',
+          'Testing emergency shutdown procedures',
+          'Finalizing security validation report'
+        ] : [
+          'Initializing smart contract validation environment...',
+          'Auditing smart contract security and logic',
+          'Validating liquidity pool mathematics',
+          'Checking for common vulnerabilities and exploits',
+          'Verifying oracle integrations and price feeds',
+          'Testing emergency shutdown procedures',
+          'Finalizing security validation report'
+        ],
+        currentTask: 'Standby mode...',
+
+        riskLevel: 'low'
     }
   ]);
 
   const [overallProgress, setOverallProgress] = useState(0);
   const [currentPhase, setCurrentPhase] = useState('Initialization');
   const [isPaused, setIsPaused] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [agentCommunication, setAgentCommunication] = useState<string[]>([]);
+  const [finalDecision, setFinalDecision] = useState<string>('');
+  const [decisionPhase, setDecisionPhase] = useState<'analysis' | 'collaboration' | 'decision'>('analysis');
   const [systemLogs, setSystemLogs] = useState<string[]>([]);
   const [currentAgentDetails, setCurrentAgentDetails] = useState<string>('');
   const [complianceScore, setComplianceScore] = useState(0);
@@ -141,6 +169,10 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
 
   const startAgentWorkflow = () => {
     addSystemLog('🚀 Starting Liquidity Provider Agent Workflow');
+    if (flowData) {
+      addSystemLog(`📋 Analyzing profile: ${flowData.entityType} ${flowData.positionSize} with ${flowData.liquidityAmount} liquidity`);
+      addSystemLog(`📊 Risk profile: ${flowData.riskTolerance} tolerance, ${flowData.poolTypes} pools, ${flowData.automationLevel} automation`);
+    }
     addSystemLog('📋 Initializing KYC, Budget, and Validator agents');
     
     // Start with KYC Agent
@@ -234,9 +266,7 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
 
     // Check if all agents are complete
     if (agents.every(agent => agent.status === 'completed')) {
-      setTimeout(() => {
-        setShowResults(true);
-      }, 2000);
+      // Agents are complete, ready for collaboration
     }
   }, [agents]);
 
@@ -262,29 +292,64 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
   };
 
   const handleComplete = () => {
-    const results = {
-      kycAgent: {
-        status: 'completed',
-        complianceScore: complianceScore,
-        complianceStatus: 'approved',
-        message: 'KYC verification completed successfully. All compliance requirements met.'
-      },
-      budgetAgent: {
-        status: 'completed',
-        liquidityRequirement: '$2.5M',
-        optimalPoolSize: '500,000 tokens',
-        projectedYield: '12.5% APY',
-        message: 'Budget analysis completed. Optimal liquidity strategy identified.'
-      },
-      validatorAgent: {
-        status: 'completed',
-        riskLevel: 'low',
-        securityScore: '98/100',
-        vulnerabilities: 'None detected',
-        message: 'Security validation completed. All smart contracts verified and secure.'
-      }
-    };
-    onComplete(results);
+    // Start collaboration phase
+    setDecisionPhase('collaboration');
+    addSystemLog('🤝 Starting agent collaboration phase...');
+    
+    // Simulate agent communication
+    setTimeout(() => {
+      const kycMessage = `KYC Agent: "I have completed compliance verification. Entity type: ${flowData?.entityType || 'individual'}, Jurisdiction: ${flowData?.jurisdiction || 'US'}"`;
+      addSystemLog(`💬 ${kycMessage}`);
+      setAgentCommunication(prev => [...prev, kycMessage]);
+    }, 1000);
+    
+    setTimeout(() => {
+      const budgetMessage = `Budget Agent: "Based on KYC data, I recommend ${flowData?.liquidityAmount || '$2.5M'} liquidity with ${flowData?.poolTypes || 'mixed'} pool strategy"`;
+      addSystemLog(`💬 ${budgetMessage}`);
+      setAgentCommunication(prev => [...prev, budgetMessage]);
+    }, 2000);
+    
+    setTimeout(() => {
+      const validatorMessage = `Validator Agent: "I will validate the proposed strategy on ${flowData?.preferredChains?.join(', ') || 'Ethereum'} chains"`;
+      addSystemLog(`💬 ${validatorMessage}`);
+      setAgentCommunication(prev => [...prev, validatorMessage]);
+    }, 3000);
+
+    // Agent collaboration and discussion
+    setTimeout(() => {
+      const discussion1 = `KYC Agent: "Budget Agent, I've verified the entity. What liquidity amount do you recommend based on their ${flowData?.positionSize || 'minnow'} position size?"`;
+      addSystemLog(`💬 ${discussion1}`);
+      setAgentCommunication(prev => [...prev, discussion1]);
+    }, 4000);
+
+    setTimeout(() => {
+      const discussion2 = `Budget Agent: "For a ${flowData?.positionSize || 'minnow'} position, I recommend starting with ${flowData?.liquidityAmount || '$2.5M'}. Validator Agent, can you confirm this is safe on ${flowData?.preferredChains?.join(', ') || 'Ethereum'}?"`;
+      addSystemLog(`💬 ${discussion2}`);
+      setAgentCommunication(prev => [...prev, discussion2]);
+    }, 5000);
+
+    setTimeout(() => {
+      const discussion3 = `Validator Agent: "Strategy validated! ${flowData?.riskTolerance === 'aggressive' ? 'Medium' : 'Low'} risk profile is appropriate. I recommend ${flowData?.automationLevel || 'semi-automated'} automation for optimal results."`;
+      addSystemLog(`💬 ${discussion3}`);
+      setAgentCommunication(prev => [...prev, discussion3]);
+    }, 6000);
+    
+    // Move to decision phase
+    setTimeout(() => {
+      setDecisionPhase('decision');
+      addSystemLog('🎯 Moving to final decision phase...');
+      
+      // Generate final collaborative decision
+      const decision = `Based on collaborative analysis:
+• KYC: ${flowData?.entityType || 'Individual'} entity verified for ${flowData?.jurisdiction || 'US'} jurisdiction
+• Budget: ${flowData?.liquidityAmount || '$2.5M'} liquidity recommended with ${flowData?.poolTypes || 'mixed'} pool strategy
+• Validation: Strategy validated for ${flowData?.preferredChains?.join(', ') || 'Ethereum'} chains
+• Risk Assessment: ${flowData?.riskTolerance === 'aggressive' ? 'Medium' : 'Low'} risk profile suitable for ${flowData?.positionSize || 'minnow'} position size
+• Final Recommendation: APPROVED with ${flowData?.automationLevel || 'semi-automated'} automation and ${flowData?.monitoringFrequency || 'daily'} monitoring`;
+      
+      setFinalDecision(decision);
+      addSystemLog('✅ Final collaborative decision reached!');
+    }, 7000);
   };
 
   if (!open) return null;
@@ -601,7 +666,7 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
                     {/* Estimated Time */}
                     <Box sx={{ textAlign: 'center' }}>
                       <Typography variant="caption" sx={{ color: '#B0BEC5' }}>
-                        Estimated Time: {agent.estimatedTime}
+    
                       </Typography>
                     </Box>
                   </CardContent>
@@ -610,6 +675,59 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
             </Grid>
           ))}
         </Grid>
+
+        {/* Profile Summary */}
+        {flowData && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+          >
+            <Card sx={{ 
+              mb: 4,
+              background: 'rgba(156, 39, 176, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(156, 39, 176, 0.3)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h6" sx={{ color: 'white', mb: 3, textAlign: 'center' }}>
+                  👤 Liquidity Provider Profile
+                </Typography>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Entity Type: <span style={{ color: 'white' }}>{flowData.entityType}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Position Size: <span style={{ color: 'white' }}>{flowData.positionSize}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Risk Tolerance: <span style={{ color: 'white' }}>{flowData.riskTolerance}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5' }}>
+                      Liquidity Amount: <span style={{ color: 'white' }}>{flowData.liquidityAmount}</span>
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Pool Types: <span style={{ color: 'white' }}>{flowData.poolTypes}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Preferred Chains: <span style={{ color: 'white' }}>{flowData.preferredChains.join(', ')}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5', mb: 1 }}>
+                      Automation: <span style={{ color: 'white' }}>{flowData.automationLevel}</span>
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#B0BEC5' }}>
+                      Jurisdiction: <span style={{ color: 'white' }}>{flowData.jurisdiction}</span>
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
         {/* Compliance & Risk Summary */}
         {(complianceScore > 0 || riskAssessment) && (
@@ -672,46 +790,153 @@ const LiquidityProviderAgentsPage: React.FC<LiquidityProviderAgentsPageProps> = 
             </Card>
           </motion.div>
         )}
+
+        {/* Completion Section */}
+        {agents.every(agent => agent.status === 'completed') && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.0 }}
+          >
+            <Card sx={{ 
+              mt: 4,
+              background: 'rgba(76, 175, 80, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(76, 175, 80, 0.3)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ color: 'white', mb: 3, fontWeight: 600 }}>
+                  🎉 Liquidity Provider Analysis Complete!
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 4, fontWeight: 500 }}>
+                  All AI agents have successfully completed their analysis. Now they will collaborate to reach a final decision.
+                </Typography>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={handleComplete}
+                  startIcon={<LaunchIcon />}
+                  sx={{
+                    background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
+                    px: 4,
+                    py: 1.5,
+                    fontSize: '1.1rem',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
+                    }
+                  }}
+                >
+                  Start Agent Collaboration
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Agent Collaboration Phase */}
+        {decisionPhase === 'collaboration' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card sx={{ 
+              mt: 4,
+              background: 'rgba(33, 150, 243, 0.15)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(33, 150, 243, 0.3)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" sx={{ color: 'white', mb: 3, fontWeight: 600, textAlign: 'center' }}>
+                  🤝 Agent Collaboration Phase
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 4, textAlign: 'center', fontWeight: 500 }}>
+                  Agents are now communicating and sharing findings to reach a collaborative decision...
+                </Typography>
+                
+                {/* Agent Communication Display */}
+                <Box sx={{ maxHeight: '300px', overflowY: 'auto', mb: 3 }}>
+                  {agentCommunication.map((message, index) => (
+                    <Box key={index} sx={{ 
+                      mb: 2, 
+                      p: 2, 
+                      background: 'rgba(255, 255, 255, 0.1)', 
+                      borderRadius: '12px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                    }}>
+                      <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 500 }}>
+                        {message}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Final Decision Phase */}
+        {decisionPhase === 'decision' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Card sx={{ 
+              mt: 4,
+              background: 'rgba(76, 175, 80, 0.2)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(76, 175, 80, 0.4)',
+              borderRadius: '20px'
+            }}>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h5" sx={{ color: 'white', mb: 3, fontWeight: 600, textAlign: 'center' }}>
+                  🎯 Final Collaborative Decision
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#FFFFFF', mb: 4, textAlign: 'center', fontWeight: 500 }}>
+                  The agents have reached a final decision through collaboration:
+                </Typography>
+                
+                <Box sx={{ 
+                  p: 3, 
+                  background: 'rgba(255, 255, 255, 0.1)', 
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  mb: 3
+                }}>
+                  <Typography variant="body1" sx={{ color: '#FFFFFF', fontWeight: 500, whiteSpace: 'pre-line' }}>
+                    {finalDecision}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ textAlign: 'center' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => onComplete({ decision: finalDecision, flowData })}
+                    startIcon={<LaunchIcon />}
+                    sx={{
+                      background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
+                      px: 4,
+                      py: 1.5,
+                      fontSize: '1.1rem',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
+                      }
+                    }}
+                  >
+                    Proceed with Decision
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </Container>
 
-      {/* Results Dialog */}
-      <Dialog
-        open={showResults}
-        maxWidth="md"
-        fullWidth
-        PaperProps={{
-          sx: {
-            background: 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            borderRadius: '20px'
-          }
-        }}
-      >
-        <DialogTitle sx={{ textAlign: 'center', color: '#2E7D32' }}>
-          🎉 Liquidity Provider Analysis Complete!
-        </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ textAlign: 'center', mb: 3 }}>
-            All AI agents have successfully completed their analysis. Your liquidity provider application is ready for review.
-          </Typography>
-          <Box sx={{ textAlign: 'center' }}>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={handleComplete}
-              startIcon={<LaunchIcon />}
-              sx={{
-                background: 'linear-gradient(135deg, #4CAF50, #2E7D32)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #2E7D32, #1B5E20)'
-                }
-              }}
-            >
-              View Results & Proceed
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+
 
       <style>
         {`

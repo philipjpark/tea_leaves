@@ -124,8 +124,7 @@ const TokenFactory: React.FC = () => {
     'Market-based pricing',
     'Fixed price offering',
     'Dutch auction',
-    'Bonding curve',
-    'Custom pricing model'
+    'Bonding curve'
   ];
 
   // Validation functions
@@ -768,19 +767,10 @@ Please provide comprehensive analysis and actionable next steps for this token l
                   {suggestion}
                 </MenuItem>
               ))}
-              <MenuItem value="custom">Custom pricing model</MenuItem>
             </Select>
           </FormControl>
           
-          {formData.pricing === 'custom' && (
-            <TextField
-              fullWidth
-              label="Custom Pricing Description"
-              placeholder="Describe your custom pricing strategy..."
-              multiline
-              rows={3}
-            />
-          )}
+
         </Box>
       )
     },

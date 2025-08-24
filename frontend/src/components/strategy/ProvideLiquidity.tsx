@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -47,6 +47,7 @@ import {
   Close as CloseIcon
 } from '@mui/icons-material';
 import LiquidityProviderAgentsPage from './LiquidityProviderAgentsPage';
+import LiquidityProviderFlow from './LiquidityProviderFlow';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -84,6 +85,15 @@ const ProvideLiquidity: React.FC = () => {
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
   const [githubLinkOpen, setGithubLinkOpen] = useState(false);
   const [showAgents, setShowAgents] = useState(false);
+  const [showFlow, setShowFlow] = useState(false);
+  const [flowData, setFlowData] = useState<any>(null);
+  const flowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (showFlow && flowRef.current) {
+      flowRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [showFlow]);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -309,7 +319,7 @@ const ProvideLiquidity: React.FC = () => {
     {
       id: 'leaderboard',
       title: 'Leaderboard Warrior',
-      description: 'Compete for the most liquid, creative and lucrative tokens',
+      description: 'Top tokens get TEALV rewards and achieve deployment',
       icon: <StarIcon sx={{ fontSize: 32 }} />,
       color: '#2E7D32',
       status: 'active',
@@ -348,7 +358,7 @@ const ProvideLiquidity: React.FC = () => {
     {
       id: 'custodian',
       title: 'Custodian',
-      description: 'Participate in our buddy system for new users',
+      description: 'Custody for small holders to ensure quick transactions',
       icon: <SecurityIcon sx={{ fontSize: 32 }} />,
       color: '#2E7D32',
       status: 'active',
@@ -556,14 +566,14 @@ const ProvideLiquidity: React.FC = () => {
                       onClick={() => {
                         if (method.id === 'sub-exchange') {
                           setComingSoonOpen(true);
-                        } else if (method.id === 'developer') {
-                          setGithubLinkOpen(true);
-                        } else if (method.id === 'liquidity-provider') {
-                          setShowAgents(true);
-                        }
-                        else {
-                          openWorkflow(method);
-                        }
+                                                   } else if (method.id === 'developer') {
+                             setGithubLinkOpen(true);
+                           } else if (method.id === 'liquidity-provider') {
+                             setShowFlow(true);
+                           }
+                           else {
+                             openWorkflow(method);
+                           }
                       }}
                       sx={{
                         bgcolor: method.color,
@@ -843,9 +853,24 @@ const ProvideLiquidity: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-                 {/* Liquidity Provider Agents Page */}
+                 {/* Liquidity Provider Flow */}
+           <div ref={flowRef}>
+             {showFlow && (
+               <LiquidityProviderFlow
+                 onComplete={(data) => {
+                   setFlowData(data);
+                   setShowFlow(false);
+                   setShowAgents(true);
+                 }}
+                 onClose={() => setShowFlow(false)}
+               />
+             )}
+           </div>
+
+           {/* Liquidity Provider Agents Page */}
            <LiquidityProviderAgentsPage 
              open={showAgents} 
+             flowData={flowData}
              onComplete={(results) => {
                console.log('Liquidity provider agents completed:', results);
                setShowAgents(false);

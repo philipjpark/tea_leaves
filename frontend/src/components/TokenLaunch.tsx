@@ -33,14 +33,14 @@ const TokenLaunch: React.FC = () => {
       color: '#6A1B9A'
     },
     {
-      title: 'Strategy Access',
-      description: 'Access to premium AI-powered trading strategies and backtesting tools.',
+      title: 'Token Access',
+      description: 'Access to early funding rounds for high-potential tokens.',
       icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
       color: '#6A1B9A'
     },
     {
       title: 'Revenue Sharing',
-      description: 'Earn a share of platform fees and strategy performance rewards.',
+      description: 'Earn a share of platform fees and token performance rewards.',
       icon: <MonetizationOnIcon sx={{ fontSize: 40 }} />,
       color: '#6A1B9A'
     }
@@ -99,7 +99,7 @@ const TokenLaunch: React.FC = () => {
                 lineHeight: 1.6
               }}
             >
-              Join the future of AI-powered crypto trading with tea-leaves's native token
+              Join the future of multi asset tokenization with tea-leaves's native token
             </Typography>
           </Box>
 

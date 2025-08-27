@@ -44,6 +44,7 @@ import {
   AccountBalance
 } from '@mui/icons-material';
 import TokenLaunch from '../components/TokenLaunch';
+import BlinkingText from '../components/BlinkingText';
 // CryptoShakers component removed - not needed for now
 
 const Home: React.FC = () => {
@@ -180,8 +181,10 @@ const Home: React.FC = () => {
                       textAlign: 'center'
                     }}
                   >
-                    <Box component="span" sx={{ color: '#6A1B9A', fontStyle: 'italic' }}>tea</Box>
-                    <Box component="span" sx={{ color: '#2E7D32' }}>_leaves</Box>
+                    <BlinkingText blinkColor="#6A1B9A" normalColor="#6A1B9A" duration={1.2} delay={0}>
+                      tea_
+                    </BlinkingText>
+                    <Box component="span" sx={{ color: '#2E7D32' }}>leaves</Box>
                   </Typography>
                   
                   <Typography 
@@ -408,7 +411,7 @@ const Home: React.FC = () => {
                 lineHeight: 1.6
               }}
             >
-              Institutions (<i>Whales</i>)and Retailers (<i>Minnows</i>) provide liquidity to power an exchange that undergirds a multi-token asset tokenization pipeline that supports and creates new assets dynamically.
+              Institutions (<i>Whales</i>) and Retailers (<i>Minnows</i>) provide liquidity to power an exchange that undergirds a multi-token asset tokenization pipeline that supports and creates new assets dynamically.
             </Typography>
           </Box>
 
@@ -614,7 +617,7 @@ const Home: React.FC = () => {
                 </Grid>
                 
                 <Typography variant="body2" sx={{ color: '#2E7D32', opacity: 0.8, fontStyle: 'italic' }}>
-                  "Liquidity is the steam of the tea_leaves ecosystem, powering the future of asset tokenization"
+                  "Liquidity is the steam of the <BlinkingText blinkColor="#6A1B9A" normalColor="#6A1B9A" duration={1.2} delay={0.6}>tea_</BlinkingText>leaves ecosystem, powering the future of asset tokenization"
                 </Typography>
               </Card>
             </Box>
@@ -1038,23 +1041,25 @@ const Home: React.FC = () => {
             >
               Users Yield Liquidity (6 Ways)
             </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                maxWidth: 700, 
-                mx: 'auto', 
-                fontWeight: 400, 
-                color: '#2E7D32',
-                opacity: 0.85,
-                lineHeight: 1.6,
-                fontSize: { xs: '1rem', md: '1.125rem' }
-              }}
-            >
-              Multiple pathways to engage with the{' '}
-              <Box component="span" sx={{ color: '#6A1B9A', fontStyle: 'italic' }}>tea</Box>
-              <Box component="span" sx={{ fontStyle: 'italic' }}>_leaves</Box> ecosystem.{' '}
-              Choose your preferred method of participation and start building the future of finance.
-            </Typography>
+                          <Typography 
+                variant="h6" 
+                sx={{ 
+                  maxWidth: 700, 
+                  mx: 'auto', 
+                  fontWeight: 400, 
+                  color: '#2E7D32',
+                  opacity: 0.85,
+                  lineHeight: 1.6,
+                  fontSize: { xs: '1rem', md: '1.125rem' }
+                }}
+              >
+                Multiple pathways to engage with the{' '}
+                <BlinkingText blinkColor="#6A1B9A" normalColor="#6A1B9A" duration={1.2} delay={0.2}>
+                  tea_
+                </BlinkingText>
+                <Box component="span" sx={{ fontStyle: 'italic' }}>leaves</Box> ecosystem.{' '}
+                Choose your preferred method of participation and start building the future of finance.
+              </Typography>
           </Box>
 
           <Grid container spacing={4}>
@@ -1218,7 +1223,7 @@ const Home: React.FC = () => {
                   fontSize: { xs: '1rem', md: '1.125rem' }
                 }}
               >
-                Join leading institutions leveraging <Box component="span" sx={{ color: '#6A1B9A', fontStyle: 'italic' }}>tea</Box><Box component="span">_leaves</Box> to forerun the future of finance.
+                Join leading institutions leveraging <BlinkingText blinkColor="#6A1B9A" normalColor="#6A1B9A" duration={1.2} delay={0.4}>tea_</BlinkingText><Box component="span">leaves</Box> to forerun the future of finance.
               </Typography>
               <motion.div
                 whileHover={{ scale: 1.02 }}
